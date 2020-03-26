@@ -17,13 +17,13 @@ Otherwise :  ``` mvn install ```
 ## Input step
 The step is fully *Metadata Injection* compatible
 
-![Input Step](https://github.com/jfmonteil/Pentaho-Google-Sheet-Plugin/blob/master/screenshots/PentahoInfluxDBInputPlugin.png?raw=true)
+![Input Step](https://github.com/jfmonteil/pentaho-influxdb-plugin/blob/master/screenshots/PentahoInfluxDBInputPlugin.png?raw=true)
 
 ### Step Name : Name of the step
 
 ### InfluxDB Connection
 Select InfluxDB connection, create a new one *New Button*, or edit one *Edit Button*
-![Input Step](https://github.com/jfmonteil/Pentaho-Google-Sheet-Plugin/blob/master/screenshots/PentahoInfluxDBInputPluginConnection.png?raw=true)
+![Input Step](https://github.com/jfmonteil/pentaho-influxdb-plugin/blob/master/screenshots/PentahoInfluxDBInputPluginConnection.png?raw=true)
 
 ### Database 
 Browse button lets you see available databases
