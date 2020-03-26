@@ -32,13 +32,18 @@ Browse button lets you see available databases
 InfluxDBQL query (on Measurement tables or continuous Query)
 
 ### Returns
-*Field name : Name fo the InfluxDB field, tag or value First field should be time
-*InfluxDB name : InfluxDB type : Tag or field
-*Retrun type : Pentaho return type
-*Length
-*Format : Be careful avout timestam, "time" format : Defaul should be : yyyy-MM-dd'T'HH:mm:ss'Z'
+* Field name : 
+Name fo the InfluxDB field, tag or value First field should be time
+* InfluxDB name : 
+InfluxDB type : Tag or field
+* Retrun type : 
+Pentaho return type
+* Length
+* Format : 
+Be careful avout timestam, "time" format : Defaul should be : yyyy-MM-dd'T'HH:mm:ss'Z'
 
-*Get Output Fields button* lets you guess  fields and retrun types from query.
+* Get Output Fields button
+lets you guess  fields and retrun types from query.
 
 ### Preview button : lets you preview X rows
 
