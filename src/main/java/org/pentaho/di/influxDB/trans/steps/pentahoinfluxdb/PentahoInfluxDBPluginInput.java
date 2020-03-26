@@ -192,7 +192,7 @@ public class PentahoInfluxDBPluginInput extends BaseStep implements StepInterfac
         if (ValueMetaInterface.TYPE_TIMESTAMP  == targetValueMeta.getType()) {
             //Class.isAssignableFrom(Class)
 			try{
-			logBasic("This is a Timestamp (type:"+sourceValueMeta.getType()+")conversion Converting :"+value.toString()+" with mask:"+sourceValueMeta.getConversionMask());
+			//logBasic("This is a Timestamp (type:"+sourceValueMeta.getType()+")conversion Converting :"+value.toString()+" with mask:"+sourceValueMeta.getConversionMask());
 
 			LocalDateTime localDateTime = LocalDateTime.from(f.parse(value.toString()));
 			Timestamp timestamp = Timestamp.valueOf(localDateTime);
