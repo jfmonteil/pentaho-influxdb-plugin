@@ -25,6 +25,7 @@ The step is fully *Metadata Injection* compatible
 
 ### InfluxDB Connection
 Select InfluxDB connection, create a new one *New Button*, or edit one *Edit Button*
+
 ![Input Step](https://github.com/jfmonteil/pentaho-influxdb-plugin/blob/master/screenshots/PentahoInfluxDBInputPluginConnection.png?raw=true)
 
 ### Database 
@@ -51,6 +52,7 @@ lets you guess  fields and retrun types from query.
 
 ## Execute InfluxQL
 Executes an InfluxQL query and retrunrs the result as JSON
+
 ![Input Step](https://github.com/jfmonteil/pentaho-influxdb-plugin/blob/master/screenshots/PentahoInfluxDBInputPluginExecuteInfluxQL.png?raw=true)
 
 ### Step Name : Name of the step
@@ -62,7 +64,9 @@ Select InfluxDB connection, create a new one *New Button*, or edit one *Edit But
 Browse button lets you see available databases
 
 ### Query
-InfluxDBQL query that can be any query not just *select*
+InfluxDBQL query that can be any query not just *select* : examples here : https://docs.influxdata.com/influxdb/v1.7/query_language/schema_exploration/#run-a-show-field-keys-query-without-the-on-clause
+Works alo to create databases.
+Does not work for inserting rows though.
 Output is a single text field with JSON format.
 
 
