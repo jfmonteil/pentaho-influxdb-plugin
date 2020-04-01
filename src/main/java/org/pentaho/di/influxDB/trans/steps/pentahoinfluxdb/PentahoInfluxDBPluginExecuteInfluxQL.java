@@ -39,6 +39,8 @@ import java.net.URL;
 import java.util.List;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Map;
+import java.util.Set;
 import java.sql.Timestamp;
 import java.time.Instant;
 import java.math.BigDecimal;
@@ -47,6 +49,10 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.format.DateTimeFormatter;
 import java.time.LocalDateTime;
+
+import org.json.JSONArray;
+import org.json.JSONObject;
+
 
 
 import org.influxdb.InfluxDB;
@@ -67,22 +73,22 @@ import org.pentaho.di.influxDB.trans.steps.pentahoinfluxdb.ReturnValue;
 import org.pentaho.di.influxDB.trans.metastore.MetaStoreFactory;
 import org.pentaho.di.influxDB.trans.metastore.MetaStoreUtil;
 
-import org.pentaho.di.influxDB.trans.steps.pentahoinfluxdb.PentahoInfluxDBPluginInputMeta;
-import org.pentaho.di.influxDB.trans.steps.pentahoinfluxdb.PentahoInfluxDBPluginInputData;
+import org.pentaho.di.influxDB.trans.steps.pentahoinfluxdb.PentahoInfluxDBPluginExecuteInfluxQLMeta;
+import org.pentaho.di.influxDB.trans.steps.pentahoinfluxdb.PentahoInfluxDBPluginExecuteInfluxQLData;
 
 /**
  * Describe your step plugin.
  * 
  */
 
-public class PentahoInfluxDBPluginInput extends BaseStep implements StepInterface {
+public class PentahoInfluxDBPluginExecuteInfluxQL extends BaseStep implements StepInterface {
 
-  private static Class<?> PKG = PentahoInfluxDBPluginInput.class; // for i18n purposes, needed by Translator2!!
+  private static Class<?> PKG = PentahoInfluxDBPluginExecuteInfluxQL.class; // for i18n purposes, needed by Translator2!!
   
-  private PentahoInfluxDBPluginInputMeta meta;
-  private PentahoInfluxDBPluginInputData data;
+  private PentahoInfluxDBPluginExecuteInfluxQLMeta meta;
+  private PentahoInfluxDBPluginExecuteInfluxQLData data;
   
-  public PentahoInfluxDBPluginInput( StepMeta stepMeta, StepDataInterface stepDataInterface, int copyNr, TransMeta transMeta, Trans trans ) {
+  public PentahoInfluxDBPluginExecuteInfluxQL( StepMeta stepMeta, StepDataInterface stepDataInterface, int copyNr, TransMeta transMeta, Trans trans ) {
     super( stepMeta, stepDataInterface, copyNr, transMeta, trans );
   }
   
@@ -97,8 +103,8 @@ public class PentahoInfluxDBPluginInput extends BaseStep implements StepInterfac
    @Override
    public boolean init( StepMetaInterface smi, StepDataInterface sdi ) {
         
-		meta = (PentahoInfluxDBPluginInputMeta) smi;
-        data = (PentahoInfluxDBPluginInputData) sdi;
+		meta = (PentahoInfluxDBPluginExecuteInfluxQLMeta) smi;
+        data = (PentahoInfluxDBPluginExecuteInfluxQLData) sdi;
         
 		if ( StringUtils.isEmpty( meta.getConnectionName() ) ) {
 		  log.logError( "You need to specify a InfluxDB Connection connection to use in this step" );
@@ -115,9 +121,6 @@ public class PentahoInfluxDBPluginInput extends BaseStep implements StepInterfac
 		if (super.init(smi, sdi)) {
             try {
                 				
-				//Sheets service = new Sheets.Builder(HTTP_TRANSPORT, JSON_FACTORY, PentahoInfluxDBPluginCredentials.getCredentialsJson(scope,environmentSubstitute(meta.getJsonCredentialPath()))).setApplicationName(APPLICATION_NAME).build();
-				//String range=environmentSubstitute(meta.getWorksheetId());
-				//ValueRange response = service.spreadsheets().values().get(environmentSubstitute(meta.getSpreadsheetKey()),range).execute();             
 			  data.metaStore = MetaStoreUtil.findMetaStore( this );
 			  data.influxDBConnection = InfluxDBConnectionUtil.getConnectionFactory(data.metaStore).loadElement(environmentSubstitute(meta.getConnectionName()));
 			  data.influxDBConnection.initializeVariablesFrom(this);		  
@@ -126,18 +129,39 @@ public class PentahoInfluxDBPluginInput extends BaseStep implements StepInterfac
 			 
 			  influxDB.setDatabase(environmentSubstitute(meta.getDatabase()));
 			  QueryResult response = influxDB.query(new Query(query));
-		  //List<String> columns = result.getResults().get(0).getSeries().getColumns();
 			  if(response==null) {
 					logError("No response found for influxdb Database : "+environmentSubstitute( meta.getDatabase())+" for query :"+query);
+					return false;
 			  } else 
 					{				
-					List<List<Object>> values = response.getResults().get(0).getSeries().get(0).getValues();
-					logBasic("Reading Sheet, found: "+values.size()+" rows");
-					if (values == null || values.isEmpty()) {
-						logError("No response found for influxdb Database : "+environmentSubstitute( meta.getDatabase())+" for query :"+meta.getQuery());
-						} else {
-							data.rows=values;
-						}
+					List<ReturnValue> returnValues = new ArrayList<>();
+					  String name = "response";
+					  String influxDBName = "response";
+					  String type = "String";
+					  int length = 10;
+					  String format = "";
+					  returnValues.add( new ReturnValue( name, influxDBName, type, length, format ) );
+					
+					  
+					 // JSONArray ja=(JSONArray)response.getResults();
+					 // JSONObject result = (JSONObject) ja.get(0);
+					 String value=queryResulttoJson(response);
+                     
+					 if (value == null || value.isEmpty()) {
+							logError("No response found for influxdb Database : "+environmentSubstitute( meta.getDatabase())+" for query :"+meta.getQuery());
+							return false;
+							} else {
+							    List<Object> list = new ArrayList<>();
+							    list.add(value);
+							    List<List<Object>> values = new ArrayList <List <Object>> ();
+							    values.add(list);
+								data.rows=values;
+								logBasic("Reading result, found: "+values.size()+" rows");	
+								logRowlevel("Found return value :"+value);
+											
+
+							}
+				
 					}
 				
             } catch (Exception e) {
@@ -155,16 +179,15 @@ public class PentahoInfluxDBPluginInput extends BaseStep implements StepInterfac
 
   public boolean processRow( StepMetaInterface smi, StepDataInterface sdi ) throws KettleException {
     
-	meta = (PentahoInfluxDBPluginInputMeta) smi;
-    data = (PentahoInfluxDBPluginInputData) sdi;
+	meta = (PentahoInfluxDBPluginExecuteInfluxQLMeta) smi;
+    data = (PentahoInfluxDBPluginExecuteInfluxQLData) sdi;
 	
     if (first) {
+		logRowlevel("First row");
 		first = false;
 		data.outputRowMeta = new RowMeta();
-		meta.getFields(data.outputRowMeta, getStepname(), null, null, this, repository, metaStore);
-	    } 
-		
-
+		meta.getFields(data.outputRowMeta, getStepname(), null, null, this, repository, metaStore);	
+	    }
 		try {
 				Object[] outputRowData = readRow();
 				if (outputRowData == null) {
@@ -286,4 +309,57 @@ public class PentahoInfluxDBPluginInput extends BaseStep implements StepInterfac
 			return null;
         }
     }
+	
+	private String queryResulttoJson(QueryResult qr)
+	{
+		JSONObject results = new JSONObject();
+
+		try {
+			// go over all results
+			for (QueryResult.Result data : qr.getResults()) {
+				// for each serie
+				JSONArray array_series=new JSONArray();
+				for (QueryResult.Series serie : data.getSeries()) {
+					JSONObject obj=new JSONObject();
+					//get serie name
+					
+					if(serie.getName()!=null){
+						obj.put("name", serie.getName());
+					}
+					//logBasic("geting tags");
+					//get serie tags
+					Map<String, String> tags = serie.getTags();
+					ArrayList<String> tags_list = new ArrayList<String>();					
+					//JSONArray tags=(JSONArray) serie.getColumns();	
+					if(tags!=null)
+					{
+						tags_list.addAll(tags.values());
+						//logBasic(" tags list");
+
+						obj.put("tags", new JSONArray(tags_list));
+						//logBasic(" put tags list");
+					}
+					
+					//get serice column
+					//logBasic(" putcolumns");
+					JSONArray columns=new JSONArray(serie.getColumns());	
+					if(columns!=null){
+						obj.put("colmuns", columns);
+					}
+					//logBasic("put values");
+					JSONArray values = new JSONArray(serie.getValues());
+					if(values!=null){
+						obj.put("values", values);
+					}
+					array_series.put(obj);					
+				}	
+				results.put("series",array_series);
+			}
+			return results.toString();
+		} catch (Exception ignored) {
+			  logError("Exception building JSON result :" +ignored.getMessage());
+			   return "";
+			// in case of empty QueryResult body do nothing
+		}
+	}
 }

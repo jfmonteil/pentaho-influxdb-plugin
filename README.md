@@ -6,9 +6,11 @@ jfmonteil@gmail.com
 
 InfluxDB is a Database specialized in time series, used massively for IoT projects (https://www.influxdata.com/)
 
-The package contains 1 step :
+The package contains 2 steps :
 * InfluxDB Input : Reads specified fields from a query on InfluxDB
+* Execute InfluxQL : Executes an InfluxQL query and retrunrs the result as JSON
 
+a number of sample transformations are included in the *sample* directory.
 
 ## Installation
 In *delivery rep* you will find a zip that you can unzip in your *pentaho/design-tools/data-integration/plugin* folder.
@@ -46,4 +48,23 @@ Be careful avout timestam, "time" format : Defaul should be : yyyy-MM-dd'T'HH:mm
 lets you guess  fields and retrun types from query.
 
 ### Preview button : lets you preview X rows
+
+## Execute InfluxQL
+Executes an InfluxQL query and retrunrs the result as JSON
+![Input Step](https://github.com/jfmonteil/pentaho-influxdb-plugin/blob/master/screenshots/PentahoInfluxDBInputPluginExecuteInfluxQL.png?raw=true)
+
+### Step Name : Name of the step
+
+### InfluxDB Connection
+Select InfluxDB connection, create a new one *New Button*, or edit one *Edit Button*
+![Input Step](https://github.com/jfmonteil/pentaho-influxdb-plugin/blob/master/screenshots/PentahoInfluxDBInputPluginConnection.png?raw=true)
+### Database 
+Browse button lets you see available databases
+
+### Query
+InfluxDBQL query that can be any query not just *select*
+Output is a single text field with JSON format.
+
+
+
 
