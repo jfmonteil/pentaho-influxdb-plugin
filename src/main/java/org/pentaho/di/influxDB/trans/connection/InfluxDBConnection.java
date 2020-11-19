@@ -25,6 +25,7 @@ import org.pentaho.metastore.persist.MetaStoreElementType;
 
 import java.io.IOException;
 import java.util.Objects;
+import java.util.concurrent.TimeUnit ;
 
 import org.pentaho.di.influxDB.trans.metastore.MetaStoreFactory;
 import org.pentaho.di.influxDB.trans.connection.InfluxDBConnectionDialog;
@@ -255,7 +256,7 @@ public class InfluxDBConnection extends Variables {
   public InfluxDB connectToInfluxDB() throws InterruptedException, IOException {
     
 	OkHttpClient.Builder clientToUse;
-    clientToUse = new OkHttpClient.Builder();
+    clientToUse = new OkHttpClient.Builder().connectTimeout(40, TimeUnit.MINUTES).readTimeout(60, TimeUnit.MINUTES).writeTimeout(60, TimeUnit.MINUTES);
     InfluxDB influxDB = InfluxDBFactory.connect("http://" + environmentSubstitute( this.hostname ) + ":" + environmentSubstitute( this.port ), environmentSubstitute( this.username ), Encr.decryptPasswordOptionallyEncrypted( environmentSubstitute( this.password )), clientToUse, ResponseFormat.JSON);
     influxDB.setLogLevel(InfluxDB.LogLevel.NONE);
    

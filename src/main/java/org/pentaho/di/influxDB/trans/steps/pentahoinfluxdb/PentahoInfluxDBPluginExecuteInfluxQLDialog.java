@@ -14,7 +14,7 @@ import org.eclipse.swt.layout.FormData;
 import org.eclipse.swt.layout.FormLayout;
 import org.eclipse.swt.widgets.*;
 
-
+//import
 
 import org.pentaho.di.influxDB.trans.connection.InfluxDBConnection;
 import org.pentaho.di.influxDB.trans.connection.InfluxDBConnectionUtil;
