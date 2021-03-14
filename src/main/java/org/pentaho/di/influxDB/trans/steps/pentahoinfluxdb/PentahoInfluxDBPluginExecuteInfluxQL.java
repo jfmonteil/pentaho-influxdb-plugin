@@ -130,10 +130,12 @@ public class PentahoInfluxDBPluginExecuteInfluxQL extends BaseStep implements St
 			  influxDB.setDatabase(environmentSubstitute(meta.getDatabase()));
 			  QueryResult response = influxDB.query(new Query(query));
 			  if(response==null) {
-					logError("No response found for influxdb Database : "+environmentSubstitute( meta.getDatabase())+" for query :"+query);
-					return false;
-			  } else 
-					{				
+
+
+			  	    logBasic("No response found for influxdb Database : "+environmentSubstitute( meta.getDatabase())+" for query :"+query);
+					//return false;
+			  }
+
 					List<ReturnValue> returnValues = new ArrayList<>();
 					  String name = "response";
 					  String influxDBName = "response";
@@ -145,24 +147,27 @@ public class PentahoInfluxDBPluginExecuteInfluxQL extends BaseStep implements St
 					  
 					 // JSONArray ja=(JSONArray)response.getResults();
 					 // JSONObject result = (JSONObject) ja.get(0);
-					 String value=queryResulttoJson(response);
+					 String value="";
+				if (response != null) {
+					value="";
+			   	}
+				else {
+					value=queryResulttoJson(response);
+				}
                      
-					 if (value == null || value.isEmpty()) {
-							logError("No response found for influxdb Database : "+environmentSubstitute( meta.getDatabase())+" for query :"+meta.getQuery());
-							return false;
-							} else {
-							    List<Object> list = new ArrayList<>();
-							    list.add(value);
-							    List<List<Object>> values = new ArrayList <List <Object>> ();
-							    values.add(list);
-								data.rows=values;
-								logBasic("Reading result, found: "+values.size()+" rows");	
-								logRowlevel("Found return value :"+value);
+
+					List<Object> list = new ArrayList<>();
+					list.add(value);
+					List<List<Object>> values = new ArrayList <List <Object>> ();
+					values.add(list);
+					data.rows=values;
+					logBasic("Reading result, found: "+values.size()+" rows");
+					logRowlevel("Found return value :"+value);
 											
 
-							}
+
 				
-					}
+
 				
             } catch (Exception e) {
                 logError("Error: for influxdb Database : "+environmentSubstitute(meta.getDatabase())+" for query :"+meta.getQuery() + e.getMessage(), e);
